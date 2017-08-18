@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Jenssegers\Date\Date;
 use Str;
 use URL;
 
@@ -233,7 +234,7 @@ class Event extends MyBaseModel
             'Attendee Name',
             'Attendee Email',
             'Attendee Ticket'
-        ], $this->questions->lists('title')->toArray());
+        ], $this->questions->pluck('title')->toArray());
 
         $attendees = $this->attendees()->has('answers')->get();
 
@@ -243,7 +244,7 @@ class Event extends MyBaseModel
 
             foreach ($this->questions as $question) {
 
-                if (in_array($question->id, $attendee->answers->lists('question_id')->toArray())) {
+                if (in_array($question->id, $attendee->answers->pluck('question_id')->toArray())) {
                     $answers[] = $attendee->answers->where('question_id', $question->id)->first()->answer_text;
                 } else {
                     $answers[] = null;
@@ -332,7 +333,18 @@ class Event extends MyBaseModel
         return ['created_at', 'updated_at', 'start_date', 'end_date'];
     }
 
-    public function getIcsForEvent()
+    public function getStartDateAttribute($date)
+    {
+        return new Date($date);
+    }
+
+    public function getEndDateAttribute($date)
+    {
+        return new Date($date);
+    }
+
+
+        public function getIcsForEvent()
     {
         $siteUrl = URL::to('/');
         $eventUrl = $this->getEventUrlAttribute();

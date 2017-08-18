@@ -11,3 +11,10 @@ installed
 /composer.phar
 _ide_helper.php
 *.swp
+/bootstrap/cache/*
+_ide_helper_models.php
+Attendize.iml
+storage/debugbar/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
