@@ -35,7 +35,7 @@ class EventAttendeesController extends MyBaseController
      */
     public function showAttendees(Request $request, $event_id)
     {
-        $allowed_sorts = ['first_name', 'email', 'ticket_id', 'order_reference'];
+        $allowed_sorts = ['first_name', 'email', 'ticket_id', 'order_reference', 'reference_index'];
 
         $searchQuery = $request->get('q');
         $sort_order = $request->get('sort_order') == 'asc' ? 'asc' : 'desc';
@@ -50,6 +50,8 @@ class EventAttendeesController extends MyBaseController
                 ->where(function ($query) use ($searchQuery) {
                     $query->where('orders.order_reference', 'like', $searchQuery . '%')
                         ->orWhere('attendees.first_name', 'like', $searchQuery . '%')
+                        ->orWhere('attendees.reference_index', 'like', $searchQuery . '%')
+                        ->orWhereRaw("CONCAT(`orders`.`order_reference`,'-',`attendees`.`reference_index`) LIKE ?", [$searchQuery.'%'])
                         ->orWhere('attendees.email', 'like', $searchQuery . '%')
                         ->orWhere('attendees.last_name', 'like', $searchQuery . '%');
                 })
@@ -97,7 +99,7 @@ class EventAttendeesController extends MyBaseController
 
         return view('ManageEvent.Modals.InviteAttendee', [
             'event'   => $event,
-            'tickets' => $event->tickets()->lists('title', 'id'),
+            'tickets' => $event->tickets()->pluck('title', 'id'),
         ]);
     }
 
@@ -149,6 +151,7 @@ class EventAttendeesController extends MyBaseController
             $order->last_name = $attendee_last_name;
             $order->email = $attendee_email;
             $order->order_status_id = config('attendize.order_complete');
+            $order->is_payment_received = 1;
             $order->amount = $ticket_price;
             $order->account_id = Auth::user()->account_id;
             $order->event_id = $event_id;
@@ -243,7 +246,7 @@ class EventAttendeesController extends MyBaseController
 
         return view('ManageEvent.Modals.ImportAttendee', [
             'event'   => $event,
-            'tickets' => $event->tickets()->lists('title', 'id'),
+            'tickets' => $event->tickets()->pluck('title', 'id'),
         ]);
     }
 
@@ -465,7 +468,7 @@ class EventAttendeesController extends MyBaseController
     {
         $data = [
             'event'   => Event::scope()->find($event_id),
-            'tickets' => Event::scope()->find($event_id)->tickets()->lists('title', 'id')->toArray(),
+            'tickets' => Event::scope()->find($event_id)->tickets()->pluck('title', 'id')->toArray(),
         ];
 
         return view('ManageEvent.Modals.MessageAttendees', $data);
@@ -529,9 +532,9 @@ class EventAttendeesController extends MyBaseController
         Log::info($attendee);
 
 
-        $this->dispatch(new GenerateTicket($attendee->order->order_reference . "-" . $attendee->reference_index));
+        $this->dispatch(new GenerateTicket($attendee->getReferenceAttribute()));
 
-        $pdf_file_name = $attendee->order->order_reference . '-' . $attendee->reference_index;
+        $pdf_file_name = $attendee->getReferenceAttribute();
         $pdf_file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $pdf_file_name;
         $pdf_file = $pdf_file_path . '.pdf';
 
@@ -575,7 +578,7 @@ class EventAttendeesController extends MyBaseController
                         'orders.created_at',
                         DB::raw("(CASE WHEN attendees.has_arrived THEN 'YES' ELSE 'NO' END) AS has_arrived"),
                         'attendees.arrival_time',
-                    ])->get();
+                    ])->get()->all();
 
                 $sheet->fromArray($data);
                 $sheet->row(1, [
@@ -612,7 +615,7 @@ class EventAttendeesController extends MyBaseController
         $data = [
             'attendee' => $attendee,
             'event'    => $attendee->event,
-            'tickets'  => $attendee->event->tickets->lists('title', 'id'),
+            'tickets'  => $attendee->event->tickets->pluck('title', 'id'),
         ];
 
         return view('ManageEvent.Modals.EditAttendee', $data);
@@ -675,7 +678,7 @@ class EventAttendeesController extends MyBaseController
         $data = [
             'attendee' => $attendee,
             'event'    => $attendee->event,
-            'tickets'  => $attendee->event->tickets->lists('title', 'id'),
+            'tickets'  => $attendee->event->tickets->pluck('title', 'id'),
         ];
 
         return view('ManageEvent.Modals.CancelAttendee', $data);
@@ -702,15 +705,21 @@ class EventAttendeesController extends MyBaseController
         }
 
         $attendee->ticket->decrement('quantity_sold');
-        $attendee->ticket->decrement('sales_volume', $attendee->ticket->price);
-        $attendee->ticket->event->decrement('sales_volume', $attendee->ticket->price);
+
+        if($attendee->order->amount != 0){
+            $attendee->ticket->decrement('sales_volume', $attendee->ticket->price);
+            $attendee->ticket->event->decrement('sales_volume', $attendee->ticket->price);
+        }
+
         $attendee->is_cancelled = 1;
         $attendee->save();
 
         $eventStats = EventStats::where('event_id', $attendee->event_id)->where('date', $attendee->created_at->format('Y-m-d'))->first();
         if($eventStats){
             $eventStats->decrement('tickets_sold',  1);
-            $eventStats->decrement('sales_volume',  $attendee->ticket->price);
+            if($attendee->order->amount != 0){
+                $eventStats->decrement('sales_volume',  $attendee->ticket->price);
+            }
         }
 
         $data = [
@@ -723,7 +732,7 @@ class EventAttendeesController extends MyBaseController
                 $message->to($attendee->email, $attendee->full_name)
                     ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                     ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
-                    ->subject('You\'re ticket has been cancelled');
+                    ->subject('Your ticket has been cancelled');
             });
         }
 

@@ -28,8 +28,9 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Ticket</th>
-                    <th>Order Ref.</th>
+                    <th>Attendee Ref.</th>
                     <th>Purchase Date</th>
+                    <th>Status</th>
                     <th>Arrived</th>
                 </tr>
             </thead>
@@ -39,8 +40,9 @@
                     <td>{{{$attendee->full_name}}}</td>
                     <td>{{{$attendee->email}}}</td>
                     <td>{{{$attendee->ticket->title}}}</td>
-                    <td>{{{$attendee->order->order_reference}}}</td>
-                    <td>{{$attendee->created_at->format('d/m/Y H:i')}}</td>
+                    <td>{{{$attendee->getReferenceAttribute()}}}</td>
+                    <td>{{$attendee->created_at->format('d/m/Y H:i')}}</td> 
+                    <td>@if($attendee->order->is_payment_received)PAYMENT DUE @endif</td>
                     <td><input type="checkbox" style="border: 1px solid #000; height: 15px; width: 15px;" /></td>
                 </tr>
                 @endforeach

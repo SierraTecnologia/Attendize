@@ -4,6 +4,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your application. This value is used when the
+    | framework needs to place the application's name in a notification or
+    | any other location as required by the application or its packages.
+    */
+    'name' => 'Attendize',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
@@ -65,7 +76,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LANG', 'en'),
 
     /*
     |--------------------------------------------------------------------------
@@ -107,7 +118,9 @@ return [
     |
     */
 
-    'log' => env('LOG', 'errorlog'),
+    'log' => env('APP_LOG', 'single'),
+    
+    'log_level' => env('APP_LOG_LEVEL', 'debug'),
 
     /*
     |--------------------------------------------------------------------------
@@ -137,6 +150,7 @@ return [
         Illuminate\Foundation\Providers\FoundationServiceProvider::class,
         Illuminate\Hashing\HashServiceProvider::class,
         Illuminate\Mail\MailServiceProvider::class,
+        Illuminate\Notifications\NotificationServiceProvider::class,
         Illuminate\Pagination\PaginationServiceProvider::class,
         Illuminate\Pipeline\PipelineServiceProvider::class,
         Illuminate\Queue\QueueServiceProvider::class,
@@ -164,9 +178,7 @@ return [
         Milon\Barcode\BarcodeServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Laravel\Socialite\SocialiteServiceProvider::class,
         Nitmedia\Wkhtml2pdf\L5Wkhtml2pdfServiceProvider::class,
-        Mews\Purifier\PurifierServiceProvider::class,
         MaxHoffmann\Parsedown\ParsedownServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
@@ -211,6 +223,7 @@ return [
         'Lang'         => Illuminate\Support\Facades\Lang::class,
         'Log'          => Illuminate\Support\Facades\Log::class,
         'Mail'         => Illuminate\Support\Facades\Mail::class,
+        'Notification' => Illuminate\Support\Facades\Notification::class,
         'Password'     => Illuminate\Support\Facades\Password::class,
         'Queue'        => Illuminate\Support\Facades\Queue::class,
         'Redirect'     => Illuminate\Support\Facades\Redirect::class,
@@ -234,9 +247,7 @@ return [
         'DNS2D'        => Milon\Barcode\Facades\DNS2DFacade::class,
         'Image'        => Intervention\Image\Facades\Image::class,
         'Excel'        => Maatwebsite\Excel\Facades\Excel::class,
-        'Socialize'    => Laravel\Socialite\Facades\Socialite::class,
         'HttpClient'   => Vinelab\Http\Facades\Client::class,
-        'Purifier'     => Mews\Purifier\Facades\Purifier::class,
         'Markdown'     => MaxHoffmann\Parsedown\ParsedownFacade::class,
         'Omnipay'      => Omnipay\Omnipay::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
