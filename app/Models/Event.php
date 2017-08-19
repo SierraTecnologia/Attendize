@@ -333,18 +333,29 @@ class Event extends MyBaseModel
         return ['created_at', 'updated_at', 'start_date', 'end_date'];
     }
 
+    /**
+     * @param $date
+     * @return Date
+     */
     public function getStartDateAttribute($date)
     {
         return new Date($date);
     }
 
+    /**
+     * @param $date
+     * @return Date
+     */
     public function getEndDateAttribute($date)
     {
         return new Date($date);
     }
 
 
-        public function getIcsForEvent()
+    /**
+     * @return string
+     */
+    public function getIcsForEvent()
     {
         $siteUrl = URL::to('/');
         $eventUrl = $this->getEventUrlAttribute();

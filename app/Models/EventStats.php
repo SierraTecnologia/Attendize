@@ -66,12 +66,12 @@ class EventStats extends \Illuminate\Database\Eloquent\Model
     }
 
     /**
-     * @todo: Missing amount?
      * Updates the sales volume earned by an event.
      *
      */
     public function updateSalesVolume($event_id)
     {
+        $amount = 0; // @todo: Missing amount?
         $stats = $this->firstOrNew([
             'event_id' => $event_id,
             'date'     => DB::raw('CURRENT_DATE'),
