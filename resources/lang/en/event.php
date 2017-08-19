@@ -1,8 +1,12 @@
 <?php
 return [
+    'notFound' => 'Event Not Found',
     'tickets' => [
         'offline' => 'Offline Payment Methods Available',
-        'register' => 'Register'
+        'register' => 'Register',
+        'errors' => [
+            'needCreateTicketToAddAttendee' => "You need to create a ticket before you can add an attendee."
+        ],
     ],
     'header' => [
         'presents' => 'Presents',
@@ -57,9 +61,12 @@ return [
         ],
         'attendees' => [
             'title' => 'Order Attendees',
-            'cancelled' => 'Cancelled'
+            'cancelled' => 'Cancelled',
         ]
 
+    ],
+    'attendees' => [
+        'notFound' => 'Attendee Not Found',
     ]
 
 ];

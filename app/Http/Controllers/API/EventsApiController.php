@@ -28,7 +28,7 @@ class EventsApiController extends ApiBaseController
             return Event::scope($this->account_id)->find($attendee_id);
         }
 
-        return response('Event Not Found', 404);
+        return response(trans('event.notFound'), 404);
     }
 
     public function store(Request $request)

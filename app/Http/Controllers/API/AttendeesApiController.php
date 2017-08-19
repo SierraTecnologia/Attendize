@@ -29,17 +29,26 @@ class AttendeesApiController extends ApiBaseController
             return Attendee::scope($this->account_id)->find($attendee_id);
         }
 
-        return response('Attendee Not Found', 404);
+        return response(trans('event.attendees.notFound'), 404);
     }
 
+    /**
+     * @param Request $request
+     */
     public function store(Request $request)
     {
     }
 
+    /**
+     * @param Request $request
+     */
     public function update(Request $request)
     {
     }
 
+    /**
+     * @param Request $request
+     */
     public function destroy(Request $request)
     {
     }

@@ -212,7 +212,7 @@ class EventAttendeesController extends MyBaseController
                 ]),
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             Log::error($e);
             DB::rollBack();
@@ -241,7 +241,9 @@ class EventAttendeesController extends MyBaseController
          * @todo This is a bit hackish
          */
         if ($event->tickets->count() === 0) {
-            return '<script>showMessage("You need to create a ticket before you can add an attendee.");</script>';
+            return '<script>showMessage("'.trans(
+                'event.ticket.errors.needCreateTicketToAddAttendee'
+            ).'");</script>';
         }
 
         return view('ManageEvent.Modals.ImportAttendee', [
@@ -260,6 +262,7 @@ class EventAttendeesController extends MyBaseController
      */
     public function postImportAttendee(Request $request, $event_id)
     {
+        $attendee = null;
         $rules = [
             'ticket_id'      => 'required|exists:tickets,id,account_id,' . \Auth::user()->account_id,
             'attendees_list' => 'required|mimes:csv,txt|max:5000|',

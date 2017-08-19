@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Models\Account;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -63,20 +64,23 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $account = Account::create([
+        $accountId = null;
+        if ($account = Account::create([
             'email' => $data['email'],
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'currency_id' => config('attendize.default_currency'),
             'timezone_id' => config('attendize.default_timezone'),
-        ]);
+        ])) {
+            $accountId = $account->id;
+        }
 
         return User::create([
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
-            'account_id' => $account_id,
+            'account_id' => $accountId,
             'is_parent' => 1,
             'is_registered' => 1,
         ]);
