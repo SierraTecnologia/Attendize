@@ -1,0 +1,129 @@
+parameters:
+    bin_dir: "./vendor/bin"
+    git_dir: "."
+    stop_on_failure: false
+    ignore_unstaged_changes: false
+    hide_circumvention_tip: false
+    process_timeout: 90
+    ascii:
+        failed: ~
+        succeeded: ~
+    tasks:
+#        phpunit:
+#            metadata:
+#                blocking: true
+#                priority: 8
+#        clover_coverage:
+#            clover_file: storage/app/coverage.xml
+#            level: 50
+#            metadata:
+#                blocking: true
+#                priority: 7
+        git_blacklist:
+            keywords:
+                - "die("
+                - "var_dump("
+                - "exit;"
+            triggered_by: [php]
+            regexp_type: G
+            metadata:
+                blocking: false
+                priority: 5
+        git_branch_name:
+#            matchers:
+#                Branch name must contain JIRA issue number: /(TT|TO|EDI|QUES)-([0-9]*)/
+            additional_modifiers: ''
+            metadata:
+                blocking: false
+                priority: 5
+        git_commit_message:
+#            matchers:
+#                Must contain JIRA issue number: /(TT|TO|EDI|QUES)-([0-9]*)\d+/
+            case_insensitive: true
+            multiline: true
+            additional_modifiers: ''
+            metadata:
+                blocking: false
+                priority: 5
+#        phpstan:
+#            autoload_file: _ide_helper.php
+#            configuration: ~
+#            level: 0
+#            triggered_by: ['php']
+#            metadata:
+#                blocking: false
+#                priority: 5
+        phpcpd:
+            directory: 'app'
+            exclude: ['bootstrap', 'database', 'tests', 'vendor', 'resources/views']
+            names_exclude: []
+            fuzzy: false
+            min_lines: 5
+            min_tokens: 70
+            triggered_by: ['php']
+            metadata:
+                blocking: false
+                priority: 5
+#        phpcs:
+#            standard: PSR2
+#            show_warnings: true
+#            tab_width: ~
+##            whitelist_patterns: []
+##            encoding: ~
+#            ignore_patterns: ['_ide_helper.php', '*/bootstrap/*', '*/database/*', '*/tests/*', '*/vendor/*', '*/resources/views/*']
+#            sniffs: []
+#            triggered_by: [php]
+#            metadata:
+#                blocking: false
+#                priority: 5
+#        phpcsfixer2:
+#            allow_risky: false
+#            cache_file: ~
+#            config: ~
+#            rules: []
+#            using_cache: true
+#            path_mode: ~
+#            verbose: true
+#            diff: false
+#            triggered_by: ['php']
+#            metadata:
+#                blocking: false
+#                priority: 5
+#        phpmd:
+#            ruleset: ['/config/phpmd.xml']
+#            exclude: ['bootstrap', 'tests', 'database', 'vendor', 'resources/views', '_ide_helper.php']
+#            metadata:
+#                blocking: false
+#                priority: 5
+#        phpmnd:
+#            directory: 'app'
+#            exclude: ['_ide_helper.php']
+#            exclude_path: ['bootstrap', 'tests', 'database', 'vendor', 'resources/views']
+#            extensions: []
+#            hint: false
+#            ignore_numbers: []
+#            ignore_strings: []
+#            strings: false
+#            triggered_by: ['php']
+#            metadata:
+#                blocking: false
+#                priority: 5
+#        phpspec:
+#            config_file: ~
+#            format: ~
+#            stop_on_failure: false
+#            verbose: false
+#            metadata:
+#                blocking: false
+#                priority: 5
+        phpversion:
+            project: '7.1'
+            metadata:
+                blocking: false
+                priority: 5
+        composer: ~
+        git_conflict: ~
+        phplint: ~
+        securitychecker: ~
+    testsuites: []
+    extensions: []
